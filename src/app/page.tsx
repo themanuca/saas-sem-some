@@ -3,7 +3,7 @@ import Image from "next/image";
 
 
 export const metadata: Metadata = {
-  title: "ComTodoAmor | Crie sua VAGABNDA",
+  title: "ComTodoAmor | Crie seu Site",
   description: "Demonstre para o seu amor",
 };
 export default function Home() {
