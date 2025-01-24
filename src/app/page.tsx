@@ -1,5 +1,6 @@
 "use client"
 import { ComoFunciona } from "@/components/comoFunciona";
+import { Header } from "@/components/header";
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,12 +11,13 @@ export default  function Home() {
 
   return (
     <div>
+      <Header/>
       <div className="p-5 lg:p-0" id="sobre">
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex flex-col lg:flex-row justify-between items-center gap-8 bg-[radial-gradient(circle_at_50%_75%,#FF4E6D,transparent_31%)] lg:bg-[radial-gradient(circle_at_75%,#FF4E6D,transparent_31%)] mt-7 p-6 lg:p-12 rounded-xl min-h-screen">
                   <div className="">
                     <h1 className="text-left font-extrabold text-4xl lg:text-5xl text-gray-800 pb-5 leading-tight" > Transforme sentimentos em presentes inesquecíveis. </h1>
-                    <p className="text-left text-lg lg:text-xl text-gray-600 leading-relaxed mb-4">
+                    <p className="text-left text-lg lg:text-xl text-gray-600 leading-relaxed mb-4 text-wrap">
                       Cada história de amor merece ser contada de forma única. Transformamos suas memórias e declarações em presentes criativos e personalizados. 
                       Celebre momentos marcantes com magia, porque todo amor é uma obra de arte.      
                     </p>
