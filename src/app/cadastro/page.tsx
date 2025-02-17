@@ -7,8 +7,26 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
-import { tree } from "next/dist/build/templates/app-page";
+import { addDoc, collection, getFirestore } from "firebase/firestore";
+import { app, analytics } from "../../../firebaseConfig";
+import { gerarLinkPersonalizado } from "@/components/linkPersonalizado";
+import { gerarQRCode, gerarQRCodeParaCasal } from "@/components/qrCode";
+import handlerSalvarForms from "../salvarForms/salvarSite";
+import useMercadoPago from "../hook/useMercadoPago";
 
+type DadosFormulario = {
+  method:string;
+    body:{
+        titulo: string;
+        declaracao: string;
+        dataInicio: string; // Data no formato string (ex: "2025-01-01")
+        tempoJuntos: string;
+        imagens: string[]; // Array de URLs ou caminhos de imagens
+        emailUser: string; // E-mail do usuário
+        linkPersonalizado:string;
+        qrCode:string
+  }
+};
 export default function CriarPagina() {
 
   const [titulo, setTitulo] = useState("");
@@ -16,10 +34,13 @@ export default function CriarPagina() {
   const [dataInicio, setDataInicio] = useState<string>("");
   const [tempoJuntos, setTempoJuntos] = useState("");
   const [imagens, setImagens] = useState<string[]>([]);
-  const [isDisable, setDisable] = useState<boolean>(false);
+  const [isDisable, setDisable] = useState<boolean>(true);
   const [emailUser, setEmailUser] = useState<string>("");
   const [isModalEmail, setModalEmail] = useState<boolean>(false);
+  const isValidEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+  const [emailInVaid, setEmailInVaid] = useState<boolean>(false)
 
+  const { createMercadoPagoCheckout } = useMercadoPago();
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       if(imagens.length >=4){
@@ -38,23 +59,46 @@ export default function CriarPagina() {
     }
 
   }
+  
+  const handleSubmitModalEmail = async ()=>{
+    debugger
+    if(!emailUser){
+      setEmailInVaid(true)
+      return
+    }else if(!emailUser.match(isValidEmail)){
+      setEmailInVaid(true)
+      return
+    }
 
-  const handleConfirmar = () => {
-    const dados = {
-      titulo,
-      declaracao,
-      dataInicio,
-      tempoJuntos,
-      imagens,
+    const linkPersonalizado = gerarLinkPersonalizado(titulo, dataInicio);
+    const qrCode = await gerarQRCode(linkPersonalizado);
+
+    const dados:DadosFormulario = {
+      body: {
+        titulo,
+        declaracao,
+        dataInicio,
+        tempoJuntos,
+        imagens,
+        emailUser,
+        linkPersonalizado,
+        qrCode
+      },
+      method: ""
     };
-    setModalEmail(true);  
-    console.log("Dados confirmados:", dados);
-    alert("Página criada com sucesso!");
-  };
 
-  const handleSubmitModalEmail = ()=>{
-
-    console.log(emailUser)
+    try {
+      debugger
+      var submitSalvar =  await handlerSalvarForms(dados);
+      if(submitSalvar?.status === 200){
+        
+        alert("Usuário salvo com sucesso!");
+        createMercadoPagoCheckout(dados.body)
+      }
+    } catch (error) {
+      console.error("Erro ao salvar:", error);
+      alert("Erro ao salvar o usuário.");
+    }
   };
 
   useEffect(() => {
@@ -126,13 +170,13 @@ export default function CriarPagina() {
                             file:mr-4 file:py-2 file:px-4
                             file:rounded-full file:border-0
                             file:text-sm file:font-semibold
-                            file:bg-pink-400 file:bg-pink-500
+                            file:bg-pink-500
                             hover:file:bg-pink-300"
                         />
                         </div>
                         <button
                           type="button"
-                          onClick={handleConfirmar}
+                          onClick={(e)=>setModalEmail(true)}
                           className={` text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ${
                             isDisable 
                             ?"bg-gray-300"
@@ -146,20 +190,24 @@ export default function CriarPagina() {
             </div>
 
              {isModalEmail && (
-                    <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+                    <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-10">
                       <div className="bg-white rounded-lg shadow-lg p-6 w-96">
                         <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                          Insira seu e-mail
+                          Insira seu e-mail  
                         </h2>
                         <p className="text-gray-600 mb-4">
                           Precisamos do seu e-mail para enviar o QR Code.
                         </p>
+                        {emailInVaid
+                          ?<p className="text-red-500 mb-4"> Email Invalido </p>
+                          :""
+                        }
                         <input
                           type="email"
                           value={emailUser}
                           onChange={(e) => setEmailUser(e.target.value)}
                           placeholder="Digite seu e-mail"
-                          className="w-full px-3 py-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className={`w-full px-3 py-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 `}
                         />
                         <div className="flex justify-end space-x-3">
                           <button
@@ -223,3 +271,4 @@ export default function CriarPagina() {
     </div>
   );
 }
+
