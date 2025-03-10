@@ -1,7 +1,8 @@
 ## SAAS COM TODO AMOR
 
 O Desenvolvimento dessa ferramenta é o meu incio no mundo do "indie hackers" e do empreendedorismo. 
-Como desenvolvedor, demorei demais para inciar meus projetos pessoais, perdi um tempo que não posso mais me do luxo de perder!. 
+
+Alguns commit acabei fazendo com email da empresa que trabalho, pois esqueci de configurar o email para as branch localmente. 
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
