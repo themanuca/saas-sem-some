@@ -1,3 +1,6 @@
+#Dockerfile generico
+
+
 # Usar uma imagem leve do Node.js
 FROM node:20-alpine
 

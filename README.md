@@ -5,6 +5,11 @@ Como desenvolvedor, demorei demais para inciar meus projetos pessoais, perdi um 
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Docker
+
+Subi a aplicação para o docker, para justamente facilitar o desenvolvimento e o deployer. 
+O passos abaixo são padrão para as aplicações Nextjs.
+
 ## Getting Started
 
 First, run the development server:
